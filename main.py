@@ -266,8 +266,34 @@ def specify_show_criterion(show_criterion):
             specific_show_criterion = (artist_show,ticket_price_show)
     return specific_show_criterion
 
-def show_by_criterion(show_criterion,concert_list):
+def show_by_criterion(show_criterion,specific_show_criterion,concert_list):
+    """
+    shows the concerts requested by the criterion
+    :param show_criterion: the showing criterion
+    :param specific_show_criterion: the specific showing criterion
+    :param concert_list: the list of all concerts
 
+    """
+    match show_criterion:
+        case "city":
+            show_city=[c for c in concert_list if c['city']==specific_show_criterion]
+            show(show_city)
+
+        case "city and artist":
+            show_city_artist = [c for c in concert_list if (c['city'] == specific_show_criterion[0] and c['artist']==specific_show_criterion[1])]
+            show(show_city_artist)
+        case "artist and ticket price":
+            show_artist_ticket_price = [c for c in concert_list if( c['artist'] == specific_show_criterion[0] and c['ticket_price']<specific_show_criterion[1])]
+            show(show_artist_ticket_price)
+
+def show_by_criterion_ui(concert_list):
+    """
+    calls the functions needed to show concerts by criterion
+    :param concert_list: the list of all concerts
+    """
+    show_criterion=choose_show_criterions()
+    specific_show_criterion=specify_show_criterion(show_criterion)
+    show_by_criterion(show_criterion,specific_show_criterion,concert_list)
 
 while(True):
     print("")
@@ -284,6 +310,6 @@ while(True):
         case "delete":
             delete_concerts_ui(concert_list)
         case "show by criterion":
-            pass
+            show_by_criterion_ui(concert_list)
         case "exit":
             exit(0)
