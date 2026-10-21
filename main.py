@@ -4,7 +4,7 @@ def main():
 
     while True:
         print("\nadd, modify, delete, show")
-        print("show by criterion, exit")
+        print("show by criterion, report, exit")
         action = input("What do you want to do: ").strip().lower()
 
         match action:
@@ -21,6 +21,8 @@ def main():
             case "exit":
                 print("Exiting program...")
                 break
+            case "report":
+                pass
             case _:
                 print("Invalid command. Please try again.")
 

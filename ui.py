@@ -225,3 +225,4 @@ def show_by_criterion_ui(concert_list):
     specific_show_criterion = specify_show_criterion(show_criterion)
     filtered_concerts = logic.show_by_criterion(show_criterion, specific_show_criterion, concert_list)
     show(filtered_concerts)
+
