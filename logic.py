@@ -12,10 +12,14 @@ def create_concert(artist, city, date, ticket_price):
     """
     global concert_id
 
-    if not artist.strip():
+    if not isinstance(artist, str) or not artist.strip():
         raise ValueError("Artist name cannot be empty.")
-    if not city.strip():
+    if not isinstance(city, str) or not city.strip():
         raise ValueError("City name cannot be empty.")
+    if not isinstance(date, datetime.date):
+        raise ValueError("Date must be a valid datetime.date object.")
+    if not isinstance(ticket_price, (int, float)):
+        raise ValueError("Ticket price must be a number.")
     if ticket_price < 0:
         raise ValueError("Ticket price cannot be negative.")
 
@@ -97,9 +101,11 @@ def set_ticket_price(concert, new_ticket_price):
     :param concert: specific concert entity
     :param new_ticket_price: the new ticket price of the concert
     """
+    if not isinstance(new_ticket_price, (int, float)):
+        raise ValueError("Ticket price must be a number.")
     if new_ticket_price < 0:
-        raise ValueError("Ticket price cannot be negative")
-    concert["ticket_price"] = new_ticket_price
+        raise ValueError("Ticket price cannot be negative.")
+    concert["ticket_price"] = float(new_ticket_price)
 
 def modify_concert_informations(modify_id, new_date, new_ticket_price, concert_list):
     """
@@ -110,15 +116,17 @@ def modify_concert_informations(modify_id, new_date, new_ticket_price, concert_l
     :param concert_list: the list of all concert entities
 
     """
-    if new_ticket_price < 0:
-        raise ValueError("Ticket price cannot be negative.")
+    if not isinstance(new_ticket_price, (int, float)) or new_ticket_price < 0:
+        raise ValueError("Ticket price must be a valid positive number.")
+    if not isinstance(new_date, datetime.date):
+        raise ValueError("Date must be a valid datetime.date object.")
+
     for concert in concert_list:
         if get_id(concert) == modify_id:
-            set_date(concert,new_date)
-            set_ticket_price(concert,new_ticket_price)
+            set_date(concert, new_date)
+            set_ticket_price(concert, new_ticket_price)
             return
-    raise ValueError(f"Concert with ID{modify_id} does not exist")
-
+    raise ValueError(f"Concert with ID {modify_id} does not exist.")
 def delete_concerts(criterion, specific_criterion, concert_list):
     """
     deletes the concerts by the specific criterion and the coresponding id from id list
@@ -126,20 +134,29 @@ def delete_concerts(criterion, specific_criterion, concert_list):
     :param specific_criterion: the name of the artist or the lower/upper touple
     :param concert_list: the list of all concert
     """
+
     initial_length = len(concert_list)
 
     match criterion:
-        case "1":
+        case "artist":
             concert_list[:] = [c for c in concert_list if get_artist(c) != specific_criterion]
-        case "2":
+        case "ticket price interval":
             lower_bound, upper_bound = specific_criterion
+            if not isinstance(lower_bound, (int, float)) or not isinstance(upper_bound, (int, float)):
+                raise ValueError("Ticket price bounds must be numbers.")
+            if lower_bound < 0 or upper_bound < 0:
+                raise ValueError("Ticket prices cannot be negative.")
             if lower_bound > upper_bound:
                 raise ValueError("Lower bound cannot be greater than upper bound.")
+
             concert_list[:] = [c for c in concert_list if not (lower_bound <= get_ticket_price(c) <= upper_bound)]
-        case "3":
+        case "concert date":
             lower_bound, upper_bound = specific_criterion
+            if not isinstance(lower_bound, datetime.date) or not isinstance(upper_bound, datetime.date):
+                raise ValueError("Date bounds must be valid datetime.date objects.")
             if lower_bound > upper_bound:
                 raise ValueError("Starting date cannot be after ending date.")
+
             concert_list[:] = [c for c in concert_list if not (lower_bound <= get_date(c) <= upper_bound)]
 
     if len(concert_list) == initial_length:
@@ -157,9 +174,13 @@ def show_by_criterion(show_criterion, specific_show_criterion, concert_list):
         case "1":
             return [c for c in concert_list if get_city(c) == specific_show_criterion]
         case "2":
-            return [c for c in concert_list if (get_city(c) == specific_show_criterion[0] and get_artist(c) == specific_show_criterion[1])]
+            return [c for c in concert_list if
+                    (get_city(c) == specific_show_criterion[0] and get_artist(c) == specific_show_criterion[1])]
         case "3":
-            return [c for c in concert_list if (get_artist(c) == specific_show_criterion[0] and get_ticket_price(c) < specific_show_criterion[1])]
+            artist, max_price = specific_show_criterion
+            if not isinstance(max_price, (int, float)) or max_price < 0:
+                raise ValueError("Maximum ticket price must be a valid positive number.")
+            return [c for c in concert_list if (get_artist(c) == artist and get_ticket_price(c) <= max_price)]
     return []
 
 
@@ -221,3 +242,4 @@ def report_concerts_in_city_and_interval(concert_list, city, start_date, end_dat
         raise ValueError('Start date cannot be after end date')
     filtered = [concert for concert in concert_list if start_date <= get_date(concert) <= end_date and get_city(concert)==city]
     return filtered
+

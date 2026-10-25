@@ -214,16 +214,22 @@ def specify_show_criterion(show_criterion):
 
 
 def show_by_criterion_ui(concert_list):
+
     """
     calls the functions needed to show concerts by criterion
-    :param concert_list: the list of all concerts
     """
     if not concert_list:
-        print("No concerts available")
+        print("No concerts available.")
+        return
+
     show_criterion = choose_show_criterions()
     specific_show_criterion = specify_show_criterion(show_criterion)
-    filtered_concerts = logic.show_by_criterion(show_criterion, specific_show_criterion, concert_list)
-    show(filtered_concerts)
+
+    try:
+        filtered_concerts = logic.show_by_criterion(show_criterion, specific_show_criterion, concert_list)
+        show(filtered_concerts)
+    except ValueError as ve:
+        print(f"Error: {ve}")
 
 
 def choose_report_type():
