@@ -17,10 +17,9 @@ def get_dummy_concerts():
 def test_report_average_price_for_artist():
     concerts = get_dummy_concerts()
 
-    # 1. Test the happy path
+
     assert logic.report_average_price(concerts, "Band A") == 60.0
 
-    # 2. Test the exception path (TDD requires testing that validations trigger properly)
     try:
         logic.report_average_price(concerts, "Unknown")
         assert False, "Should have raised ValueError for unknown artist"
@@ -32,14 +31,12 @@ def test_report_concerts_per_city():
     concerts = get_dummy_concerts()
     counts = logic.report_concerts_per_city(concerts)
 
-    # 1. Test the happy path
-    # Berlin: 3, Paris: 1, London: 1
+
     assert counts["Berlin"] == 3
     assert counts["Paris"] == 1
     assert counts["London"] == 1
     assert "Rome" not in counts
 
-    # 2. Test the exception path
     try:
         logic.report_concerts_per_city([])
         assert False, "Should have raised ValueError for empty list"
@@ -52,16 +49,13 @@ def test_report_concerts_in_interval_sorted():
     start = date(2026, 9, 11)
     end = date(2026, 9, 13)
 
-    # 1. Test the happy path
     result = logic.report_concerts_in_interval(concerts, start, end)
 
-    # Should include Band C (40.0), Band A (70.0), Band B (120.0) in ascending price order
     assert len(result) == 3
     assert logic.get_artist(result[0]) == "Band C"
     assert logic.get_artist(result[1]) == "Band A"
     assert logic.get_artist(result[2]) == "Band B"
 
-    # 2. Test the exception path (Start date after end date)
     try:
         logic.report_concerts_in_interval(concerts, end, start)
         assert False, "Should have raised ValueError for invalid date order"
@@ -74,10 +68,8 @@ def test_report_concerts_in_city_and_interval():
     start = date(2026, 9, 11)
     end = date(2026, 9, 13)
 
-    # Fixed the function name and argument order to match logic.py
     result = logic.report_concerts_in_city_and_interval(concerts, "Berlin", start, end)
 
-    # Only Band B is in Berlin between 11/09 and 13/09
     assert len(result) == 1
     assert logic.get_artist(result[0]) == "Band B"
     assert logic.get_city(result[0]) == "Berlin"
