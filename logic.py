@@ -269,3 +269,10 @@ def report_concerts_in_city_and_interval(concert_list, city, start_date, end_dat
     filtered = [concert for concert in concert_list if start_date <= get_date(concert) <= end_date and get_city(concert)==city]
     return filtered
 
+def copy_concert_list(concert_list):
+    """
+    a function that returns a copy of the current concert list
+    :param concert_list:the list of all concerts
+    :return:copy of the list of all curent concerts
+    """
+    return [c[:] for c in concert_list]
