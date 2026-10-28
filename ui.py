@@ -1,8 +1,5 @@
 from datetime import datetime
-
 import logic
-
-
 def read_concert_data():
     """
     reads concert details from user
@@ -34,8 +31,9 @@ def add_concert_ui(concert_list):
     :param concert_list: the list of all concerts
     """
     concert_information = read_concert_data()
+    next_id=logic.get_next_id(concert_list)
     try:
-        concert_dictionary = logic.create_concert(*concert_information)
+        concert_dictionary = logic.create_concert(*concert_information,next_id)
         logic.add_concert(concert_list, concert_dictionary)
         print("Concert added successfully!")
     except ValueError as ve:

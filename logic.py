@@ -1,39 +1,15 @@
-import logic
-
-concert_id = 0
-
 import datetime
-def create_concert(artist, city, date, ticket_price):
-    """
-    create a concert and generate a concert-id
-    :param artist: artist name
-    :param city: city name
-    :param date: date name
-    :param ticket_price:concert ticket price
-    :return: a concert_entry
-    """
-    global concert_id
 
-    if not isinstance(artist, str) or not artist.strip():
-        raise ValueError("Artist name cannot be empty.")
-    if not isinstance(city, str) or not city.strip():
-        raise ValueError("City name cannot be empty.")
-    if not isinstance(date, datetime.date):
-        raise ValueError("Date must be a valid datetime.date object.")
-    if not isinstance(ticket_price, (int, float)):
-        raise ValueError("Ticket price must be a number.")
-    if ticket_price < 0:
-        raise ValueError("Ticket price cannot be negative.")
-
-    concert_id += 1
-    concert_entity = [
-         artist,
-         city,
-         date,
-         ticket_price,
-         concert_id
-    ]
-    return concert_entity
+from domain import (
+    create_concert,
+    get_id,
+    get_artist,
+    get_city,
+    get_date,
+    get_ticket_price,
+    set_date,
+    set_ticket_price,
+)
 
 def add_concert(concert_list, concert_entity):
     """
@@ -43,71 +19,17 @@ def add_concert(concert_list, concert_entity):
 
     """
     concert_list.append(concert_entity)
-def get_id(concert):
-    """
-    gets the id of a concert entity
-    :param concert: specific concert entity
-    :return: concert id
-    """
-    return concert[4]
 
+def get_next_id(concert_list):
+    """
+    generates the next available ID dynamically based on the current concert list
+    :param concert_list: list of all concerts
+    :return: next integer ID
+    """
+    if not concert_list:
+        return 1
+    return max(get_id(c) for c in concert_list) + 1
 
-def get_artist(concert):
-    """
-    gets the artist of a concert entity
-    :param concert: specific concert entity
-    :return: artist name
-    """
-    return concert[0]
-
-
-def get_city(concert):
-    """
-    gets the city of a concert entity
-    :param concert: specific concert entity
-    :return: city name
-    """
-    return concert[1]
-
-
-def get_date(concert):
-    """
-    gets the date of a concert entity
-    :param concert: specific concert entity
-    :return: concert date
-    """
-    return concert[2]
-
-
-def get_ticket_price(concert):
-    """
-    gets the ticket price of a concert entity
-    :param concert: specific concert entity
-    :return: ticket price
-    """
-    return concert[3]
-
-
-def set_date(concert, new_date):
-    """
-    sets the new date for a concert entity
-    :param concert: specific concert entity
-    :param new_date: the new date of the concert
-    """
-    concert[2] = new_date
-
-
-def set_ticket_price(concert, new_ticket_price):
-    """
-    sets the new ticket price for a concert entity
-    :param concert: specific concert entity
-    :param new_ticket_price: the new ticket price of the concert
-    """
-    if not isinstance(new_ticket_price, (int, float)):
-        raise ValueError("Ticket price must be a number.")
-    if new_ticket_price < 0:
-        raise ValueError("Ticket price cannot be negative.")
-    concert[3] = float(new_ticket_price)
 
 def modify_concert_informations(modify_id, new_date, new_ticket_price, concert_list):
     """
@@ -129,6 +51,7 @@ def modify_concert_informations(modify_id, new_date, new_ticket_price, concert_l
             set_ticket_price(concert, new_ticket_price)
             return
     raise ValueError(f"Concert with ID {modify_id} does not exist.")
+
 def delete_concerts(criterion, specific_criterion, concert_list):
     """
     deletes the concerts by the specific criterion and the coresponding id from id list
@@ -209,8 +132,6 @@ def show_by_criterion(show_criterion, specific_show_criterion, concert_list):
             return [c for c in concert_list if (get_artist(c) == artist and get_ticket_price(c) <= max_price)]
     return []
 
-
-
 def report_average_price(concert_list, artist):
     """
     function that returns the average price of concerts for a given artist
@@ -228,7 +149,6 @@ def report_average_price(concert_list, artist):
     if count==0:
         raise ValueError(f"No concerts found for artist {artist}")
     return suma/count
-
 
 def report_concerts_per_city(concert_list):
     """
