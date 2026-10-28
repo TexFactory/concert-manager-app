@@ -171,8 +171,8 @@ def delete_concerts(criterion, specific_criterion, concert_list):
                 c
                 for c in concert_list
                 if not (
-                        logic.get_artist(c) in artist_names_list
-                        and logic.get_ticket_price(c) > maximum_ticket_price
+                        get_artist(c) in artist_name_list
+                        and get_ticket_price(c) > maximum_ticket_price
                 )
             ]
 
@@ -218,16 +218,16 @@ def report_average_price(concert_list, artist):
     :param artist:specific artist
     :return:the average price of concerts for a given artist
     """
-    sum=0
+    suma=0
     count=0
     for concert in concert_list:
         if(get_artist(concert)==artist):
             count+=1
-            sum+=get_ticket_price(concert)
+            suma+=get_ticket_price(concert)
 
     if count==0:
         raise ValueError(f"No concerts found for artist {artist}")
-    return sum/count
+    return suma/count
 
 
 def report_concerts_per_city(concert_list):
