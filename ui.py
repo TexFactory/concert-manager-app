@@ -17,7 +17,7 @@ def read_concert_data():
             date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
             break
         except ValueError:
-            print("Invaid date format!Use YYYY-MM-DD")
+            print("Invaild date format!Use YYYY-MM-DD")
 
     while True:
         try:
@@ -60,7 +60,7 @@ def read_data_to_modify_concert():
             new_date_obj = datetime.strptime(new_date_str, "%Y-%m-%d").date()
             break
         except ValueError:
-            print("Invaid date format!Use YYYY-MM-DD")
+            print("Invaild date format!Use YYYY-MM-DD")
 
     while True:
         try:
@@ -110,9 +110,11 @@ def chose_criterion():
     print("1: artist")
     print("2: ticket price interval")
     print("3: concert date")
-    print("4: back")
+    print("4: artists and ticket price")
+    print("5: maximum ticket price or latest date")
+    print("6: back")
     criterion = ""
-    while criterion not in ['1', '2', '3', '4']:
+    while criterion not in ['1', '2', '3', '4', '5', '6']:
         criterion = input("Choose one of the criterions:")
     return criterion
 
@@ -127,11 +129,11 @@ def specify_criterion(criterion):
     """
     specific_criterion = ""
     match criterion:
-        case "back":
+        case "6":
             pass
-        case "artist":
+        case "1":
             specific_criterion = input("Name of the artist to delete concerts: ")
-        case "ticket price interval":
+        case "2":
             while True:
                 try:
                     lower_bound = float(input("Delete concerts with ticket prices starting from: "))
@@ -140,7 +142,7 @@ def specify_criterion(criterion):
                 except ValueError:
                     print("Enter a valid ticket price")
             specific_criterion = (lower_bound, upper_bound)
-        case "concert date":
+        case "3":
             while True:
                 starting_date = input("concerts starting from date (YYYY-MM-DD): ")
                 ending_date = input("concerts up to the date (YYYY-MM-DD): ")
@@ -149,9 +151,35 @@ def specify_criterion(criterion):
                     ending_date_obj = datetime.strptime(ending_date, "%Y-%m-%d").date()
                     break
                 except ValueError:
-                    print("Invaid date format!Use YYYY-MM-DD")
+                    print("Invaild date format!Use YYYY-MM-DD")
 
             specific_criterion = (starting_date_obj, ending_date_obj)
+        case "4":
+            artist_names=input("Enter the the name of the artists for which concerts will be deleted(separated by ,): ")
+            artist_names_list=[name.strip() for name in artist_names.split(",")]
+            while True:
+                try:
+                    maximum_ticket_price = float(input("Delete concerts with ticket prices greater than: "))
+                    break
+                except ValueError:
+                    print("Enter a valid ticket price")
+            specific_criterion=(artist_names_list,maximum_ticket_price)
+        case "5":
+            while True:
+                try:
+                    maximum_ticket_price = float(input("Delete concerts with ticket prices greater than: "))
+                    break
+                except ValueError:
+                    print("Enter a valid ticket price")
+            while True:
+                latest_date = input("concerts after the date (YYYY-MM-DD): ")
+                try:
+                    latest_date = datetime.strptime(latest_date, "%Y-%m-%d").date()
+                    break
+                except ValueError:
+                    print("Invaild date format!Use YYYY-MM-DD")
+            specific_criterion=(maximum_ticket_price,latest_date)
+
 
     return specific_criterion, criterion
 
@@ -162,7 +190,7 @@ def delete_concerts_ui(concert_list):
     :param concert_list: the list of all concerts
     """
     criterion = chose_criterion()
-    if criterion == "back":
+    if criterion == "6":
         return
     specific_criterion, criterion = specify_criterion(criterion)
     try:

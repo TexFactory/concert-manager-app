@@ -1,3 +1,5 @@
+import logic
+
 concert_id = 0
 
 import datetime
@@ -24,13 +26,13 @@ def create_concert(artist, city, date, ticket_price):
         raise ValueError("Ticket price cannot be negative.")
 
     concert_id += 1
-    concert_entity = {
-        "artist": artist,
-        "city": city,
-        "date": date,
-        "ticket_price": ticket_price,
-        "concert-id": concert_id
-    }
+    concert_entity = [
+         artist,
+         city,
+         date,
+         ticket_price,
+         concert_id
+    ]
     return concert_entity
 
 def add_concert(concert_list, concert_entity):
@@ -47,7 +49,7 @@ def get_id(concert):
     :param concert: specific concert entity
     :return: concert id
     """
-    return concert["concert-id"]
+    return concert[4]
 
 
 def get_artist(concert):
@@ -56,7 +58,7 @@ def get_artist(concert):
     :param concert: specific concert entity
     :return: artist name
     """
-    return concert["artist"]
+    return concert[0]
 
 
 def get_city(concert):
@@ -65,7 +67,7 @@ def get_city(concert):
     :param concert: specific concert entity
     :return: city name
     """
-    return concert["city"]
+    return concert[1]
 
 
 def get_date(concert):
@@ -74,7 +76,7 @@ def get_date(concert):
     :param concert: specific concert entity
     :return: concert date
     """
-    return concert["date"]
+    return concert[2]
 
 
 def get_ticket_price(concert):
@@ -83,7 +85,7 @@ def get_ticket_price(concert):
     :param concert: specific concert entity
     :return: ticket price
     """
-    return concert["ticket_price"]
+    return concert[3]
 
 
 def set_date(concert, new_date):
@@ -92,7 +94,7 @@ def set_date(concert, new_date):
     :param concert: specific concert entity
     :param new_date: the new date of the concert
     """
-    concert["date"] = new_date
+    concert[2] = new_date
 
 
 def set_ticket_price(concert, new_ticket_price):
@@ -105,7 +107,7 @@ def set_ticket_price(concert, new_ticket_price):
         raise ValueError("Ticket price must be a number.")
     if new_ticket_price < 0:
         raise ValueError("Ticket price cannot be negative.")
-    concert["ticket_price"] = float(new_ticket_price)
+    concert[3] = float(new_ticket_price)
 
 def modify_concert_informations(modify_id, new_date, new_ticket_price, concert_list):
     """
@@ -138,9 +140,9 @@ def delete_concerts(criterion, specific_criterion, concert_list):
     initial_length = len(concert_list)
 
     match criterion:
-        case "artist":
+        case "1":
             concert_list[:] = [c for c in concert_list if get_artist(c) != specific_criterion]
-        case "ticket price interval":
+        case "2":
             lower_bound, upper_bound = specific_criterion
             if not isinstance(lower_bound, (int, float)) or not isinstance(upper_bound, (int, float)):
                 raise ValueError("Ticket price bounds must be numbers.")
@@ -150,7 +152,7 @@ def delete_concerts(criterion, specific_criterion, concert_list):
                 raise ValueError("Lower bound cannot be greater than upper bound.")
 
             concert_list[:] = [c for c in concert_list if not (lower_bound <= get_ticket_price(c) <= upper_bound)]
-        case "concert date":
+        case "3":
             lower_bound, upper_bound = specific_criterion
             if not isinstance(lower_bound, datetime.date) or not isinstance(upper_bound, datetime.date):
                 raise ValueError("Date bounds must be valid datetime.date objects.")
@@ -158,7 +160,31 @@ def delete_concerts(criterion, specific_criterion, concert_list):
                 raise ValueError("Starting date cannot be after ending date.")
 
             concert_list[:] = [c for c in concert_list if not (lower_bound <= get_date(c) <= upper_bound)]
+        case "4":
 
+            artist_name_list,maximum_ticket_price=specific_criterion
+            if not isinstance(maximum_ticket_price, (int,float)):
+                raise ValueError("Ticket prices must be numbers")
+            if maximum_ticket_price<0:
+                raise ValueError('Ticket prices cannot be negative')
+            concert_list[:] = [
+                c
+                for c in concert_list
+                if not (
+                        logic.get_artist(c) in artist_names_list
+                        and logic.get_ticket_price(c) > maximum_ticket_price
+                )
+            ]
+
+        case '5':
+            maximum_ticket_price,latest_date=specific_criterion
+            if not isinstance(maximum_ticket_price, (int,float)):
+                raise ValueError("Ticket prices must be numbers")
+            if maximum_ticket_price<0:
+                raise ValueError('Ticket prices cannot be negative')
+            if not isinstance(latest_date, datetime.date):
+                raise ValueError("Date bounds must be valid datetime.date objects.")
+            concert_list[:]=[concert for concert in concert_list if not (get_ticket_price(concert)>maximum_ticket_price or get_date(concert)>latest_date)]
     if len(concert_list) == initial_length:
         raise ValueError("No concerts matched the criteria for deletion.")
 
